@@ -8,6 +8,14 @@ try {
   // Sem .env.local: as variáveis vêm do ambiente (CI).
 }
 
+// Qualquer código que abra conexão por DATABASE_URL (o cliente usado pelas
+// rotas, por exemplo) precisa cair no banco de teste. Sem isto, um teste
+// semearia o banco de teste e consultaria o de desenvolvimento — e, pior,
+// truncaria dados reais se a suíte rodasse com o .env.local de produção.
+if (process.env.DATABASE_URL_TEST) {
+  process.env.DATABASE_URL = process.env.DATABASE_URL_TEST;
+}
+
 export default defineConfig({
   // Vite 8 resolve os paths do tsconfig nativamente ("@/*" -> "src/*"),
   // então o plugin vite-tsconfig-paths não é mais necessário.
