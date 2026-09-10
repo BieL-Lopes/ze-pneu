@@ -2986,3 +2986,42 @@ git commit -m "feat(loja): layout, home, SEO e pipeline de CI"
 O site está no ar: catálogo importado, navegável por marca e medida, com busca que entende "205/55 R16", páginas de produto indexáveis e botão de WhatsApp. O botão de carrinho existe e está desabilitado — é o ponto de partida do Plano 2.
 
 **Plano 2 (Estoque, Carrinho e Pedido)** começa pelo livro-razão de estoque e pelo teste de duas reservas concorrentes do último item, que é a regra que sustenta a seção 2.2 da spec.
+
+---
+
+## Desvios registrados durante a execução
+
+O plano foi escrito antes de tocar no ambiente real. Estes pontos mudaram na
+execução, todos verificados:
+
+| Plano dizia | Ficou | Motivo |
+|---|---|---|
+| Next.js 15 | **Next.js 16.3.4** | É o estável atual. O código do plano já usava `params`/`searchParams` como `Promise`, contrato de 15 e 16 — nada quebrou. |
+| `@types/node@^20` | **`^22`** | Vitest 5 exige `^22 \|\| >=24`, e o runtime real é Node 22. O tipo é que estava desalinhado; `--legacy-peer-deps` teria escondido isso. |
+| `eslint.config.mjs` com `FlatCompat` | `defineConfig` de `eslint/config` | Formato do Next 16. A regra de fronteira foi adaptada e ampliada: o núcleo também não pode importar `drizzle-orm`, `postgres` nem `@/db/*`. |
+| `vite-tsconfig-paths` | Removido | Vite 8 resolve paths do tsconfig nativamente (`resolve.tsconfigPaths`). Uma dependência a menos. |
+| Supabase para desenvolvimento | **Postgres em Docker** | Mesma imagem `postgres:16` do CI, sem tocar na conta do cliente e sem latência de rede nos testes. Supabase entra só em produção. |
+| `unique("variants_sku_unique")` além do `.unique()` na coluna | Só o `.unique()` | Os dois juntos criariam constraints duplicadas. |
+| Ordem 8 → 9 → 10 | **10 → 8 → 9** | Importar o catálogo antes das telas fez as páginas nascerem verificadas contra dado real, em vez de mock. |
+
+### Correções que só apareceram ao abrir o navegador
+
+1. **Modo escuro quebrava o site.** O `globals.css` do scaffold trocava
+   `--background` por quase-preto sob `prefers-color-scheme: dark`. Como
+   `body { background: ... }` não está em nenhuma layer, vencia os utilitários
+   do Tailwind: seção preta com texto preto. A loja agora tem paleta clara
+   explícita e única.
+
+2. **Filtros enterravam os produtos no celular.** Cinco grupos de faceta
+   abertos empurravam o primeiro pneu dezenas de linhas abaixo. Virou painel
+   recolhível com contador de filtros ativos, expandido por padrão no desktop.
+
+3. **Home e sitemap congelados no build.** Ambos eram estáticos e o catálogo
+   muda por importação de CSV, não por deploy — produto novo não apareceria.
+   Revalidação de 5 minutos.
+
+### Pendente nesta etapa
+
+Só o **Step 8 da Task 11**: publicação em produção (projeto Supabase de
+produção, projeto na Vercel, variáveis de ambiente, domínio e SSL). Depende de
+credenciais e do domínio do cliente.
