@@ -1,0 +1,28 @@
+# Postgres de desenvolvimento e teste.
+#
+# Espelha de propósito o serviço `postgres:16` usado no CI, para que um teste
+# de integração que passa aqui passe lá. Produção roda no Supabase; a diferença
+# de versão é intencionalmente pequena e o schema é aplicado pelas mesmas
+# migrações nos três lugares.
+services:
+  postgres:
+    image: postgres:16
+    container_name: zepneu-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: zepneu
+    ports:
+      - "5433:5432"
+    volumes:
+      - zepneu-pgdata:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  zepneu-pgdata:
