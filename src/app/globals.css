@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+/*
+  A loja é um design claro assumido, não um tema adaptativo.
+
+  O template do create-next-app trocava --background por quase-preto sob
+  prefers-color-scheme: dark. Como a regra `body { background: ... }` não está
+  em layer nenhuma, ela vencia os utilitários do Tailwind (que estão em layer),
+  e o site quebrava para quem usa o sistema em modo escuro: seção preta com
+  texto preto. Um tema escuro de verdade é trabalho de design, não um efeito
+  colateral do scaffold — então a paleta clara é explícita e única.
+*/
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -8,19 +18,18 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
 }
