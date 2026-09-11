@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Cabecalho } from "@/components/layout/cabecalho";
 import { Rodape } from "@/components/layout/rodape";
+import { siteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   title: {
@@ -10,9 +11,7 @@ export const metadata: Metadata = {
   },
   description:
     "Pneus de todas as medidas e marcas, com entrega em todo o Brasil e retirada em Brasília.",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-  ),
+  metadataBase: siteUrl(),
 };
 
 export default function RootLayout({
