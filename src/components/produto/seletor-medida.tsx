@@ -14,8 +14,8 @@ export function SeletorMedida({ variantes }: { variantes: VariantDetail[] }) {
   return (
     <div>
       {variantes.length > 1 && (
-        <fieldset className="mb-6">
-          <legend className="mb-2 text-sm font-semibold text-neutral-900">
+        <fieldset className="mb-8">
+          <legend className="mb-3 text-xs font-bold uppercase tracking-widest text-tinta">
             Escolha a medida
           </legend>
           <div className="flex flex-wrap gap-2">
@@ -25,10 +25,10 @@ export function SeletorMedida({ variantes }: { variantes: VariantDetail[] }) {
                 type="button"
                 onClick={() => setSelecionadaId(v.id)}
                 aria-pressed={v.id === selecionadaId}
-                className={`rounded border px-3 py-2 text-sm transition ${
+                className={`numerais-tabulares border px-4 py-2.5 text-sm font-bold transition ${
                   v.id === selecionadaId
-                    ? "border-neutral-900 bg-neutral-900 text-white"
-                    : "border-neutral-300 text-neutral-700 hover:border-neutral-500"
+                    ? "border-marca bg-marca text-white"
+                    : "border-neutral-300 text-tinta hover:border-tinta"
                 }`}
               >
                 {v.sizeLabel ?? v.sku}
@@ -38,21 +38,23 @@ export function SeletorMedida({ variantes }: { variantes: VariantDetail[] }) {
         </fieldset>
       )}
 
-      <p className="text-3xl font-bold text-neutral-900">
+      <p className="numerais-tabulares text-4xl font-black text-tinta">
         {formatBRL(selecionada.priceCents)}
       </p>
-      <p className="mt-1 text-sm text-neutral-500">Código: {selecionada.sku}</p>
+      <p className="mt-1 text-sm text-tinta-media">
+        Código: {selecionada.sku}
+      </p>
 
       {/*
-        Desabilitado de propósito: o carrinho é o Plano 2. Deixar o botão
-        visível e inerte é honesto com quem navega o preview e evita que o
-        layout mude de forma quando o carrinho chegar.
+        Desabilitado de propósito: o carrinho é a próxima etapa do projeto.
+        Deixar o botão visível e inerte é honesto com quem navega o preview e
+        evita que o layout mude de forma quando o carrinho chegar.
       */}
       <button
         type="button"
         disabled
         title="O carrinho entra na próxima etapa do projeto"
-        className="mt-6 w-full rounded-lg bg-neutral-900 px-6 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
+        className="mt-8 w-full bg-marca px-6 py-4 text-base font-bold uppercase tracking-wide text-white transition hover:bg-marca-escura disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
       >
         Adicionar ao carrinho
       </button>

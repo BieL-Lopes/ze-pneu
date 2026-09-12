@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { IconeChevron } from "@/components/icones";
 
 /**
  * Envolve as facetas para que, no celular, elas não empurrem os produtos para
@@ -29,17 +30,21 @@ export function PainelFiltros({
         onClick={() => setAberto((a) => !a)}
         aria-expanded={aberto}
         aria-controls="painel-filtros"
-        className="mb-4 flex w-full items-center justify-between rounded-lg border border-neutral-300 px-4 py-3 text-sm font-semibold text-neutral-900 lg:hidden"
+        className="mb-4 flex w-full items-center justify-between border border-tinta px-4 py-3 text-sm font-bold uppercase tracking-wide text-tinta transition hover:bg-neutral-100 lg:hidden"
       >
-        <span>
+        <span className="flex items-center gap-2">
           Filtrar
           {filtrosAtivos > 0 && (
-            <span className="ml-2 rounded-full bg-neutral-900 px-2 py-0.5 text-xs font-semibold text-white">
+            <span className="numerais-tabulares inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-marca px-1.5 text-xs font-bold text-white">
               {filtrosAtivos}
             </span>
           )}
         </span>
-        <span aria-hidden="true">{aberto ? "▲" : "▼"}</span>
+        <IconeChevron
+          className={`h-4 w-4 transition-transform duration-200 ${
+            aberto ? "rotate-180" : ""
+          }`}
+        />
       </button>
 
       <div
