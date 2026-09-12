@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { IconeBusca } from "@/components/icones";
 
 export function Busca({ inicial = "" }: { inicial?: string }) {
   const [valor, setValor] = useState(inicial);
@@ -22,13 +23,14 @@ export function Busca({ inicial = "" }: { inicial?: string }) {
         onChange={(e) => setValor(e.target.value)}
         placeholder="Busque pela medida, ex: 205/55 R16"
         aria-label="Buscar pneus"
-        className="flex-1 rounded-lg border border-neutral-300 px-4 py-2 text-sm focus:border-neutral-900 focus:outline-none"
+        className="flex-1 rounded-md border border-transparent bg-white px-4 py-2 text-sm text-tinta placeholder:text-tinta-media focus:border-marca focus:outline-none"
       />
       <button
         type="submit"
-        className="rounded-lg bg-neutral-900 px-5 py-2 text-sm font-semibold text-white hover:bg-neutral-700"
+        className="flex items-center gap-2 rounded-md bg-marca px-5 py-2 text-sm font-bold text-white transition hover:bg-marca-escura"
       >
-        Buscar
+        <IconeBusca className="h-4 w-4" />
+        <span className="hidden sm:inline">Buscar</span>
       </button>
     </form>
   );

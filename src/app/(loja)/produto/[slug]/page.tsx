@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getCatalogService } from "@/lib/container";
 import { SeletorMedida } from "@/components/produto/seletor-medida";
 import { WhatsAppLink } from "@/components/whatsapp-link";
+import { IconeWhatsApp } from "@/components/icones";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -34,9 +35,9 @@ export default async function ProdutoPage({ params }: Props) {
   const capa = produto.media[0];
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="grid gap-10 md:grid-cols-2">
-        <div className="aspect-square overflow-hidden rounded-lg bg-neutral-100">
+    <main className="mx-auto max-w-6xl px-4 py-12">
+      <div className="grid gap-12 md:grid-cols-2">
+        <div className="aspect-square overflow-hidden bg-neutral-100">
           {capa ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -45,32 +46,33 @@ export default async function ProdutoPage({ params }: Props) {
               className="h-full w-full object-contain"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-neutral-400">
+            <div className="flex h-full items-center justify-center text-tinta-media">
               Sem imagem
             </div>
           )}
         </div>
 
         <div>
-          <span className="text-sm uppercase tracking-wide text-neutral-500">
+          <span className="text-xs font-bold uppercase tracking-widest text-marca">
             {produto.brandName}
           </span>
-          <h1 className="mt-1 text-3xl font-bold text-neutral-900">
+          <h1 className="mt-2 text-4xl font-black uppercase italic leading-none tracking-tight text-tinta">
             {produto.name}
           </h1>
 
           {produto.description && (
-            <p className="mt-4 text-neutral-600">{produto.description}</p>
+            <p className="mt-5 text-tinta-media">{produto.description}</p>
           )}
 
-          <div className="mt-8">
+          <div className="mt-10">
             <SeletorMedida variantes={produto.variants} />
           </div>
 
           <WhatsAppLink
             mensagem={`Olá! Tenho uma dúvida sobre o ${produto.brandName} ${produto.name}.`}
-            className="mt-4 block w-full rounded-lg border border-neutral-300 px-6 py-3 text-center font-medium text-neutral-700 transition hover:bg-neutral-50"
+            className="mt-3 flex w-full items-center justify-center gap-2 border border-tinta px-6 py-4 text-base font-bold uppercase tracking-wide text-tinta transition hover:bg-tinta hover:text-white"
           >
+            <IconeWhatsApp className="h-5 w-5" />
             Tirar dúvida no WhatsApp
           </WhatsAppLink>
         </div>

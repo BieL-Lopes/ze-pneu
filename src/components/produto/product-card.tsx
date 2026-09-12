@@ -6,39 +6,39 @@ export function ProductCard({ produto }: { produto: ProductSummary }) {
   return (
     <Link
       href={`/produto/${produto.slug}`}
-      className="group flex flex-col rounded-lg border border-neutral-200 bg-white p-4 transition hover:border-neutral-400 hover:shadow-sm"
+      className="group flex flex-col border border-neutral-200 bg-white p-4 transition hover:border-marca"
     >
-      <div className="mb-3 aspect-square overflow-hidden rounded bg-neutral-100">
+      <div className="mb-4 aspect-square overflow-hidden bg-neutral-100">
         {produto.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={produto.imageUrl}
             alt={produto.altText ?? produto.name}
-            className="h-full w-full object-contain transition group-hover:scale-105"
+            className="h-full w-full object-contain transition duration-300 group-hover:scale-105"
             loading="lazy"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-neutral-400">
+          <div className="flex h-full items-center justify-center text-sm text-tinta-media">
             Sem imagem
           </div>
         )}
       </div>
 
-      <span className="text-xs uppercase tracking-wide text-neutral-500">
+      <span className="text-xs font-bold uppercase tracking-widest text-marca">
         {produto.brandName}
       </span>
-      <h3 className="mt-1 font-medium text-neutral-900">{produto.name}</h3>
+      <h3 className="mt-1 font-bold text-tinta">{produto.name}</h3>
 
       {produto.sizes.length > 0 && (
-        <p className="mt-1 text-sm text-neutral-600">
+        <p className="numerais-tabulares mt-1 text-sm text-tinta-media">
           {produto.sizes.slice(0, 3).join(" · ")}
           {produto.sizes.length > 3 && ` +${produto.sizes.length - 3}`}
         </p>
       )}
 
-      <p className="mt-auto pt-3 text-lg font-semibold text-neutral-900">
-        <span className="text-sm font-normal text-neutral-500">
-          a partir de{" "}
+      <p className="numerais-tabulares mt-auto pt-4 text-xl font-black text-tinta">
+        <span className="block text-xs font-medium uppercase tracking-wide text-tinta-media">
+          a partir de
         </span>
         {formatBRL(produto.fromPriceCents)}
       </p>

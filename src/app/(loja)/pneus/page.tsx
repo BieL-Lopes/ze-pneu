@@ -34,8 +34,10 @@ export default async function PneusPage({ searchParams }: Props) {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8">
-      <h1 className="text-3xl font-bold text-neutral-900">Pneus</h1>
-      <p className="mt-1 text-neutral-600">
+      <h1 className="text-4xl font-black uppercase italic tracking-tight text-tinta">
+        Pneus
+      </h1>
+      <p className="numerais-tabulares mt-2 text-sm font-medium uppercase tracking-wide text-tinta-media">
         {total === 0
           ? "Nenhum produto encontrado"
           : `${total} ${total === 1 ? "produto" : "produtos"}`}
@@ -84,7 +86,7 @@ export default async function PneusPage({ searchParams }: Props) {
 
         <section>
           {items.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-neutral-300 p-12 text-center text-neutral-500">
+            <p className="border border-dashed border-neutral-300 p-16 text-center text-tinta-media">
               Não encontramos pneus com esses filtros. Tente remover algum ou
               buscar pela medida, como 205/55 R16.
             </p>

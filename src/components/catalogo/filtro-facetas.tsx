@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { FacetCount } from "@/core/catalog/types";
+import { IconeCheck } from "@/components/icones";
 
 type Props = {
   titulo: string;
@@ -42,11 +43,11 @@ export function FiltroFacetas({
   }
 
   return (
-    <fieldset className="border-b border-neutral-200 py-4">
-      <legend className="mb-2 text-sm font-semibold text-neutral-900">
+    <fieldset className="border-b border-neutral-200 py-5">
+      <legend className="mb-3 text-xs font-bold uppercase tracking-widest text-tinta">
         {titulo}
       </legend>
-      <ul className="space-y-1">
+      <ul className="space-y-0.5">
         {opcoes.map((opcao) => {
           const ativo = selecionados.includes(opcao.value);
           return (
@@ -54,15 +55,19 @@ export function FiltroFacetas({
               <Link
                 href={hrefAlternando(opcao.value)}
                 aria-current={ativo ? "true" : undefined}
-                className={`flex justify-between rounded px-2 py-1 text-sm transition hover:bg-neutral-100 ${
-                  ativo ? "font-semibold text-neutral-900" : "text-neutral-600"
+                className={`flex items-center justify-between gap-2 px-2 py-1.5 text-sm transition ${
+                  ativo
+                    ? "font-bold text-marca"
+                    : "text-tinta-media hover:bg-neutral-100 hover:text-tinta"
                 }`}
               >
-                <span>
-                  {ativo ? "✓ " : ""}
+                <span className="flex items-center gap-1.5">
+                  {ativo && <IconeCheck className="h-3.5 w-3.5 shrink-0" />}
                   {opcao.label}
                 </span>
-                <span className="text-neutral-400">{opcao.count}</span>
+                <span className="numerais-tabulares text-xs text-tinta-media">
+                  {opcao.count}
+                </span>
               </Link>
             </li>
           );
