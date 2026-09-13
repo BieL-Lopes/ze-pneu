@@ -1,14 +1,29 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { limparBanco, semearCatalogo } from "../helpers/db";
+import { describe, it, expect, beforeEach, afterAll } from "vitest";
+import {
+  limparDadosDeTeste,
+  semearCatalogo,
+  type CatalogoDeTeste,
+} from "../helpers/db";
 import { GET } from "@/app/api/v1/products/route";
 
+let cat: CatalogoDeTeste;
+
 beforeEach(async () => {
-  await limparBanco();
-  await semearCatalogo();
+  await limparDadosDeTeste();
+  cat = await semearCatalogo();
 });
 
-function requisicao(qs = "") {
-  return new Request(`http://localhost:3000/api/v1/products${qs}`);
+afterAll(limparDadosDeTeste);
+
+/**
+ * A suíte roda no mesmo banco dos dados reais, então toda requisição filtra
+ * pelas marcas criadas por este teste.
+ */
+function requisicao(extra = "") {
+  const marcas = `${cat.slugs.marca},${cat.slugs.outraMarca}`;
+  return new Request(
+    `http://localhost:3000/api/v1/products?marca=${encodeURIComponent(marcas)}${extra}`,
+  );
 }
 
 describe("GET /api/v1/products", () => {
@@ -24,17 +39,21 @@ describe("GET /api/v1/products", () => {
   });
 
   it("aplica os filtros da query string", async () => {
-    const res = await GET(requisicao("?marca=pirelli"));
+    const res = await GET(
+      new Request(
+        `http://localhost:3000/api/v1/products?marca=${encodeURIComponent(cat.slugs.outraMarca)}`,
+      ),
+    );
     const body = await res.json();
     expect(body.total).toBe(1);
-    expect(body.items[0].brandName).toBe("Pirelli");
+    expect(body.items[0].slug).toBe(cat.slugs.cinturato);
   });
 
   it("entende medida colada na busca", async () => {
-    const res = await GET(requisicao("?q=195%2F75%20R15"));
+    const res = await GET(requisicao("&q=195%2F75%20R15"));
     const body = await res.json();
     expect(body.total).toBe(1);
-    expect(body.items[0].slug).toBe("michelin-primacy-4");
+    expect(body.items[0].slug).toBe(cat.slugs.primacy);
   });
 
   it("devolve facetas", async () => {

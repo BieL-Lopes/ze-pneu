@@ -1,30 +1,49 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import { eq } from "drizzle-orm";
-import { testDb, limparBanco, semearCatalogo } from "../helpers/db";
+import {
+  testDb,
+  limparDadosDeTeste,
+  semearCatalogo,
+  type CatalogoDeTeste,
+} from "../helpers/db";
 import * as schema from "@/db/schema";
 import { createDrizzleProductRepository } from "@/db/repositories/drizzle-product-repository";
 
 const repo = createDrizzleProductRepository(testDb);
-const base = { page: 1, perPage: 20 };
+
+let cat: CatalogoDeTeste;
+/**
+ * Filtro que restringe a busca ao catálogo deste teste.
+ *
+ * A suíte roda no mesmo banco dos dados reais, então uma busca sem filtro
+ * traria também os produtos do cliente e as contagens não fechariam.
+ */
+let base: { page: number; perPage: number; brandSlugs: string[] };
 
 beforeEach(async () => {
-  await limparBanco();
-  await semearCatalogo();
+  await limparDadosDeTeste();
+  cat = await semearCatalogo();
+  base = {
+    page: 1,
+    perPage: 20,
+    brandSlugs: [cat.slugs.marca, cat.slugs.outraMarca],
+  };
 });
 
+afterAll(limparDadosDeTeste);
+
 describe("search", () => {
-  it("devolve todos os produtos ativos", async () => {
+  it("devolve os produtos ativos", async () => {
     const r = await repo.search(base);
     expect(r.total).toBe(2);
-    expect(r.items.map((i) => i.slug).sort()).toEqual([
-      "michelin-primacy-4",
-      "pirelli-cinturato-p7",
-    ]);
+    expect(r.items.map((i) => i.slug).sort()).toEqual(
+      [cat.slugs.primacy, cat.slugs.cinturato].sort(),
+    );
   });
 
   it("mostra o menor preço entre as variantes", async () => {
     const r = await repo.search(base);
-    const primacy = r.items.find((i) => i.slug === "michelin-primacy-4");
+    const primacy = r.items.find((i) => i.slug === cat.slugs.primacy);
     expect(primacy?.fromPriceCents).toBe(52000);
   });
 
@@ -39,19 +58,19 @@ describe("search", () => {
 
     const so195 = await repo.search({ ...base, widths: [195] });
     expect(so195.total).toBe(1);
-    expect(so195.items[0].slug).toBe("michelin-primacy-4");
+    expect(so195.items[0].slug).toBe(cat.slugs.primacy);
   });
 
   it("filtra por marca", async () => {
-    const r = await repo.search({ ...base, brandSlugs: ["pirelli"] });
+    const r = await repo.search({ ...base, brandSlugs: [cat.slugs.outraMarca] });
     expect(r.total).toBe(1);
-    expect(r.items[0].brandName).toBe("Pirelli");
+    expect(r.items[0].slug).toBe(cat.slugs.cinturato);
   });
 
-  it("busca por texto no nome e na marca", async () => {
+  it("busca por texto no nome", async () => {
     const r = await repo.search({ ...base, query: "primacy" });
     expect(r.total).toBe(1);
-    expect(r.items[0].slug).toBe("michelin-primacy-4");
+    expect(r.items[0].slug).toBe(cat.slugs.primacy);
   });
 
   it("conta facetas sobre o resultado filtrado", async () => {
@@ -68,7 +87,7 @@ describe("search", () => {
   });
 
   it("devolve resultado vazio quando nada casa com o filtro", async () => {
-    const r = await repo.search({ ...base, brandSlugs: ["inexistente"] });
+    const r = await repo.search({ ...base, brandSlugs: ["marca-inexistente"] });
     expect(r.total).toBe(0);
     expect(r.items).toEqual([]);
   });
@@ -77,31 +96,31 @@ describe("search", () => {
     await testDb
       .update(schema.products)
       .set({ status: "draft" })
-      .where(eq(schema.products.slug, "pirelli-cinturato-p7"));
+      .where(eq(schema.products.slug, cat.slugs.cinturato));
 
     const r = await repo.search(base);
     expect(r.total).toBe(1);
-    expect(r.items[0].slug).toBe("michelin-primacy-4");
+    expect(r.items[0].slug).toBe(cat.slugs.primacy);
   });
 });
 
 describe("findBySlug", () => {
   it("devolve o produto com variantes e mídia", async () => {
-    const p = await repo.findBySlug("michelin-primacy-4");
+    const p = await repo.findBySlug(cat.slugs.primacy);
     expect(p).not.toBeNull();
     expect(p!.name).toBe("Primacy 4");
-    expect(p!.brandName).toBe("Michelin");
+    expect(p!.brandName).toContain("Michelin");
     expect(p!.variants).toHaveLength(2);
     expect(p!.media[0].url).toBe("https://exemplo.test/primacy.jpg");
   });
 
   it("formata a medida da variante para exibição", async () => {
-    const p = await repo.findBySlug("michelin-primacy-4");
+    const p = await repo.findBySlug(cat.slugs.primacy);
     const medidas = p!.variants.map((v) => v.sizeLabel).sort();
     expect(medidas).toEqual(["195/75 R15 88H", "205/55 R16 91V"]);
   });
 
   it("devolve null quando não existe", async () => {
-    expect(await repo.findBySlug("nao-existe")).toBeNull();
+    expect(await repo.findBySlug("nao-existe-mesmo")).toBeNull();
   });
 });

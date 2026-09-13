@@ -15,6 +15,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     { url: new URL("/", base).toString(), priority: 1 },
     { url: new URL("/pneus", base).toString(), priority: 0.9 },
+    { url: new URL("/servicos", base).toString(), priority: 0.7 },
+    { url: new URL("/quem-somos", base).toString(), priority: 0.6 },
     ...items.map((p) => ({
       url: new URL(`/produto/${p.slug}`, base).toString(),
       priority: 0.8,
