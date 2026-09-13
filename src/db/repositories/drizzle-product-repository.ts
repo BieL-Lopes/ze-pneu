@@ -1,6 +1,12 @@
 import { and, eq, gte, ilike, inArray, lte, or } from "drizzle-orm";
 import type { Database } from "@/db/client";
-import { brands, productMedia, productVariants, products } from "@/db/schema";
+import {
+  brands,
+  productMedia,
+  productVariants,
+  products,
+  stockBalances,
+} from "@/db/schema";
 import type { ProductRepository } from "@/core/catalog/product-repository";
 import type {
   CatalogFilters,
@@ -192,9 +198,27 @@ export function createDrizzleProductRepository(db: Database): ProductRepository 
 
       if (!produto) return null;
 
+      // LEFT JOIN: variante sem linha de saldo nunca teve movimento, e precisa
+      // aparecer como esgotada em vez de sumir da página.
       const variantes = await db
-        .select()
+        .select({
+          id: productVariants.id,
+          sku: productVariants.sku,
+          priceCents: productVariants.priceCents,
+          width: productVariants.width,
+          profile: productVariants.profile,
+          rim: productVariants.rim,
+          loadIndex: productVariants.loadIndex,
+          speedRating: productVariants.speedRating,
+          vehicleType: productVariants.vehicleType,
+          onHand: stockBalances.onHand,
+          reserved: stockBalances.reserved,
+        })
         .from(productVariants)
+        .leftJoin(
+          stockBalances,
+          eq(stockBalances.variantId, productVariants.id),
+        )
         .where(
           and(
             eq(productVariants.productId, produto.id),
@@ -217,6 +241,7 @@ export function createDrizzleProductRepository(db: Database): ProductRepository 
           priceCents: v.priceCents,
           sizeLabel: rotuloMedida(v),
           vehicleType: v.vehicleType,
+          disponivel: Math.max(0, (v.onHand ?? 0) - (v.reserved ?? 0)),
         })),
       };
     },

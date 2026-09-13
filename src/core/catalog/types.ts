@@ -38,6 +38,8 @@ export type VariantDetail = {
   priceCents: number;
   sizeLabel: string | null;
   vehicleType: string | null;
+  /** Unidades que o cliente pode comprar agora. Zero é esgotado. */
+  disponivel: number;
 };
 
 export type ProductDetail = {

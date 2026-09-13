@@ -13,7 +13,8 @@
     "db:migrate": "drizzle-kit migrate",
     "import:catalogo": "tsx --env-file=.env.local scripts/import-catalog.ts",
     "db:migrate:test": "drizzle-kit migrate --config drizzle.config.test.ts",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "seed:estoque": "tsx --env-file=.env.local scripts/seed-estoque.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",
