@@ -7,13 +7,48 @@ const url = process.env.DATABASE_URL_TEST;
 if (!url) {
   throw new Error(
     "DATABASE_URL_TEST não configurada. Os testes truncam tabelas, então " +
-      "exigem um banco próprio — cair no DATABASE_URL de desenvolvimento " +
-      "apagaria o catálogo importado.",
+      "exigem um destino próprio.",
   );
 }
 
-const client = postgres(url, { prepare: false, max: 1 });
+/**
+ * Schema onde os testes rodam.
+ *
+ * Os testes truncam tabelas a cada execução. Isolá-los em um schema separado
+ * permite usar a mesma instância Postgres de produção sem risco: o TRUNCATE
+ * atinge teste.products e nunca public.products.
+ */
+const TEST_SCHEMA = process.env.TEST_SCHEMA ?? "teste";
+
+/**
+ * Trava de segurança.
+ *
+ * Um erro de configuração aqui apaga o catálogo e os pedidos reais. A checagem
+ * existe para que isso seja impossível, e não apenas desaconselhado — nenhum
+ * comentário em arquivo de exemplo impede um copiar e colar distraído.
+ */
+if (TEST_SCHEMA === "public") {
+  throw new Error(
+    'TEST_SCHEMA não pode ser "public": os testes truncam as tabelas e ' +
+      "apagariam os dados reais. Use um schema dedicado, como \"teste\".",
+  );
+}
+
+const client = postgres(url, {
+  prepare: false,
+  max: 5,
+  connection: { search_path: TEST_SCHEMA },
+});
+
 export const testDb = drizzle(client, { schema });
+
+/** Confirma, contra o banco, em que schema os testes estão de fato escrevendo. */
+export async function schemaEmUso(): Promise<string> {
+  const linhas = await testDb.execute<{ atual: string }>(
+    sql`SELECT current_schema() AS atual`,
+  );
+  return (linhas as unknown as { atual: string }[])[0].atual;
+}
 
 export async function limparBanco() {
   await testDb.execute(
