@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { eq, inArray, like } from "drizzle-orm";
+import { and, eq, inArray, like, lt } from "drizzle-orm";
 import * as schema from "@/db/schema";
 
 const url = process.env.DATABASE_URL_TEST ?? process.env.DATABASE_URL;
@@ -19,14 +19,25 @@ export const testDb = drizzle(client, { schema });
  * cria registros marcados e remove exatamente esses no fim. Nada fora do
  * prefixo é tocado em nenhum momento.
  */
-export const PREFIXO = "zztest";
+const BASE = "zztest";
+
+/**
+ * Sufixo sorteado quando este módulo carrega.
+ *
+ * Os arquivos de teste rodam em paralelo e cada um recebe sua própria instância
+ * deste módulo. Sem um prefixo por arquivo, a limpeza de um apagaria os dados
+ * que o outro está usando naquele instante — foi exatamente o que aconteceu na
+ * primeira execução paralela.
+ */
+const EXECUCAO = crypto.randomUUID().slice(0, 8);
+
+export const PREFIXO = `${BASE}${EXECUCAO}`;
 
 let contador = 0;
 
-/** Identificador único por execução, para duas suítes simultâneas não colidirem. */
 export function idDeTeste(): string {
   contador += 1;
-  return `${PREFIXO}-${process.pid}-${Date.now()}-${contador}`;
+  return `${PREFIXO}-${contador}`;
 }
 
 /**
@@ -36,10 +47,42 @@ export function idDeTeste(): string {
  * saldos, itens antes dos pedidos, variantes antes dos produtos.
  */
 export async function limparDadosDeTeste() {
+  await removerPorPrefixo(PREFIXO);
+  await varrerOrfaos();
+}
+
+/**
+ * Remove sobras de execuções que morreram no meio.
+ *
+ * O corte de uma hora garante que dados de um arquivo rodando agora, em
+ * paralelo, jamais sejam alcançados — eles têm segundos de vida.
+ */
+async function varrerOrfaos() {
+  const umaHoraAtras = new Date(Date.now() - 60 * 60 * 1000);
+
+  const antigas = await testDb
+    .select({ slug: schema.brands.slug })
+    .from(schema.brands)
+    .where(
+      and(
+        like(schema.brands.slug, `${BASE}%`),
+        lt(schema.brands.createdAt, umaHoraAtras),
+      ),
+    );
+
+  const prefixos = new Set(
+    antigas.map((b) => b.slug.split("-")[0]).filter((p) => p !== PREFIXO),
+  );
+  for (const prefixo of prefixos) {
+    await removerPorPrefixo(prefixo);
+  }
+}
+
+async function removerPorPrefixo(prefixo: string) {
   const produtos = await testDb
     .select({ id: schema.products.id })
     .from(schema.products)
-    .where(like(schema.products.slug, `${PREFIXO}%`));
+    .where(like(schema.products.slug, `${prefixo}%`));
   const produtoIds = produtos.map((p) => p.id);
 
   const variantes = produtoIds.length
@@ -53,7 +96,7 @@ export async function limparDadosDeTeste() {
   const pedidos = await testDb
     .select({ id: schema.orders.id })
     .from(schema.orders)
-    .where(like(schema.orders.reference, `${PREFIXO}%`));
+    .where(like(schema.orders.reference, `${prefixo}%`));
   const pedidoIds = pedidos.map((p) => p.id);
 
   if (pedidoIds.length) {
@@ -85,7 +128,7 @@ export async function limparDadosDeTeste() {
 
   await testDb
     .delete(schema.carts)
-    .where(like(schema.carts.token, `${PREFIXO}%`));
+    .where(like(schema.carts.token, `${prefixo}%`));
 
   if (produtoIds.length) {
     await testDb
@@ -95,10 +138,10 @@ export async function limparDadosDeTeste() {
 
   await testDb
     .delete(schema.categories)
-    .where(like(schema.categories.slug, `${PREFIXO}%`));
+    .where(like(schema.categories.slug, `${prefixo}%`));
   await testDb
     .delete(schema.brands)
-    .where(like(schema.brands.slug, `${PREFIXO}%`));
+    .where(like(schema.brands.slug, `${prefixo}%`));
 }
 
 export type CatalogoDeTeste = Awaited<ReturnType<typeof semearCatalogo>>;
