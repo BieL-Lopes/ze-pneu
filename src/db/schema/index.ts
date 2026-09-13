@@ -6,3 +6,4 @@ export * from "./product-media";
 export * from "./stock";
 export * from "./carts";
 export * from "./orders";
+export * from "./site-settings";

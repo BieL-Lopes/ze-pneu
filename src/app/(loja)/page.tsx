@@ -1,23 +1,37 @@
 import Link from "next/link";
-import { getCatalogService } from "@/lib/container";
+import { getCatalogService, getConfiguracoes } from "@/lib/container";
 import { ProductCard } from "@/components/produto/product-card";
+import { FaixaPromocional } from "@/components/home/faixa-promocional";
+import { BuscaPorMedida } from "@/components/home/busca-por-medida";
+import { AtalhosAro } from "@/components/home/atalhos-aro";
+import { Marcas } from "@/components/home/marcas";
+import { Motivos } from "@/components/home/motivos";
+import { ChamadaServicos } from "@/components/home/chamada-servicos";
 
 // O catálogo muda por importação de CSV, não por deploy. Sem isto a home
 // ficaria congelada no conteúdo do último build, escondendo produto novo.
 export const revalidate = 300;
 
 export default async function HomePage() {
-  const { items } = await getCatalogService().listar({ page: 1, perPage: 8 });
+  const [{ items, facets }, config] = await Promise.all([
+    getCatalogService().listar({ page: 1, perPage: 8 }),
+    getConfiguracoes(["banner_texto", "banner_link"]),
+  ]);
 
   return (
     <main>
+      <FaixaPromocional
+        texto={config.banner_texto ?? null}
+        link={config.banner_link ?? null}
+      />
+
       {/*
         Campo vermelho da marca. Sobre ele, só branco puro atinge 4,5:1 de
         contraste — a hierarquia vem de peso e tamanho, e o CTA é preto,
         que é a relação preto-sobre-vermelho do próprio logo.
       */}
       <section className="bg-marca">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:py-28">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:py-24">
           <h1 className="max-w-3xl text-balance text-4xl font-black uppercase italic leading-[1.04] tracking-tight text-white sm:text-6xl sm:leading-[0.98] lg:text-7xl">
             O pneu certo, sem complicação
           </h1>
@@ -34,27 +48,67 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {items.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 py-16">
-          <div className="flex items-end justify-between gap-4">
-            <h2 className="text-3xl font-black uppercase italic tracking-tight text-tinta">
-              Destaques
-            </h2>
-            <Link
-              href="/pneus"
-              className="shrink-0 text-sm font-bold text-marca transition hover:text-marca-escura"
-            >
-              Ver todos
-            </Link>
+      {/*
+        A busca por medida fica logo abaixo do hero, sobreposta ao limite entre
+        o campo vermelho e o branco: é a primeira coisa que a pessoa faz ao
+        chegar, e ela lê os três números na lateral do próprio pneu.
+      */}
+      <section className="bg-neutral-50">
+        <div className="mx-auto max-w-7xl px-4 py-14">
+          <h2 className="text-2xl font-black uppercase italic tracking-tight text-tinta">
+            Qual a medida do seu pneu?
+          </h2>
+          <p className="mt-2 text-tinta-media">
+            Os três números estão na lateral do pneu, assim:{" "}
+            <span className="numerais-tabulares font-bold text-tinta">
+              205/55 R16
+            </span>
+          </p>
+
+          <div className="mt-8">
+            <BuscaPorMedida />
           </div>
 
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {items.map((produto) => (
-              <ProductCard key={produto.id} produto={produto} />
-            ))}
+          <div className="mt-10 border-t border-neutral-200 pt-8">
+            <p className="mb-4 text-xs font-bold uppercase tracking-widest text-tinta-media">
+              Ou vá direto pelo aro
+            </p>
+            <AtalhosAro />
           </div>
-        </section>
-      )}
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-7xl px-4">
+        {items.length > 0 && (
+          <section className="py-16">
+            <div className="flex items-end justify-between gap-4">
+              <h2 className="text-3xl font-black uppercase italic tracking-tight text-tinta">
+                Destaques
+              </h2>
+              <Link
+                href="/pneus"
+                className="shrink-0 text-sm font-bold text-marca transition hover:text-marca-escura"
+              >
+                Ver todos
+              </Link>
+            </div>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {items.map((produto) => (
+                <ProductCard key={produto.id} produto={produto} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        <Marcas marcas={facets.brands} />
+      </div>
+
+      <Motivos />
+
+      <div className="mx-auto max-w-7xl px-4">
+        <ChamadaServicos />
+      </div>
     </main>
   );
 }
