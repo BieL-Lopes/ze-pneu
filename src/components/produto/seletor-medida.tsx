@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { VariantDetail } from "@/core/catalog/types";
 import { formatBRL } from "@/lib/format";
 import { BotaoAdicionar } from "@/components/produto/botao-adicionar";
+import { classesDeBotao } from "@/components/ui/botao";
 
 export function SeletorMedida({ variantes }: { variantes: VariantDetail[] }) {
   const [selecionadaId, setSelecionadaId] = useState(variantes[0]?.id ?? "");
@@ -28,13 +29,15 @@ export function SeletorMedida({ variantes }: { variantes: VariantDetail[] }) {
                   type="button"
                   onClick={() => setSelecionadaId(v.id)}
                   aria-pressed={v.id === selecionadaId}
-                  className={`numerais-tabulares border px-4 py-2.5 text-sm font-bold transition ${
-                    v.id === selecionadaId
-                      ? "border-marca bg-marca text-white"
-                      : esgotada
+                  className={classesDeBotao({
+                    variante: v.id === selecionadaId ? "primaria" : "sutil",
+                    tamanho: "pequeno",
+                    extra: `numerais-tabulares ${
+                      esgotada && v.id !== selecionadaId
                         ? "border-neutral-200 text-neutral-400 line-through"
-                        : "border-neutral-300 text-tinta hover:border-tinta"
-                  }`}
+                        : ""
+                    }`,
+                  })}
                 >
                   {v.sizeLabel ?? v.sku}
                 </button>

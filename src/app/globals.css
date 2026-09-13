@@ -19,6 +19,13 @@
   --color-tinta: #0a0a0a;
   --color-tinta-media: #52525b;
   --color-tinta-clara: #a3a3a3;
+
+  /*
+    Raio único de todo controle: botão, campo, seletor, atalho.
+    Botão redondo ao lado de campo quadrado denuncia que as peças foram
+    escritas em momentos diferentes. Muda aqui e muda no site inteiro.
+  */
+  --radius-controle: 0.375rem;
 }
 
 :root {

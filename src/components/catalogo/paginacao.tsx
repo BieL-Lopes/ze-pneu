@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { BotaoLink, classesDeBotao } from "@/components/ui/botao";
 
 type Props = {
   page: number;
@@ -19,10 +19,13 @@ export function Paginacao({ page, perPage, total, paramsAtuais }: Props) {
     return qs ? `/pneus?${qs}` : "/pneus";
   }
 
-  const ativo =
-    "border border-tinta px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-tinta transition hover:bg-marca hover:border-marca hover:text-white";
-  const inerte =
-    "border border-neutral-200 px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-neutral-300";
+  // Extremo sem destino vira <span>: um link que não leva a lugar nenhum
+  // continua recebendo foco do teclado e é anunciado como link pelo leitor
+  // de tela.
+  const inerte = classesDeBotao({
+    variante: "sutil",
+    extra: "border-neutral-200 text-neutral-300",
+  });
 
   return (
     <nav
@@ -30,11 +33,13 @@ export function Paginacao({ page, perPage, total, paramsAtuais }: Props) {
       className="mt-12 flex items-center justify-center gap-4"
     >
       {page > 1 ? (
-        <Link href={href(page - 1)} className={ativo} rel="prev">
+        <BotaoLink href={href(page - 1)} variante="contorno" rel="prev">
           Anterior
-        </Link>
+        </BotaoLink>
       ) : (
-        <span className={inerte}>Anterior</span>
+        <span className={inerte} aria-hidden="true">
+          Anterior
+        </span>
       )}
 
       <span className="numerais-tabulares text-sm text-tinta-media">
@@ -42,11 +47,13 @@ export function Paginacao({ page, perPage, total, paramsAtuais }: Props) {
       </span>
 
       {page < ultimaPagina ? (
-        <Link href={href(page + 1)} className={ativo} rel="next">
+        <BotaoLink href={href(page + 1)} variante="contorno" rel="next">
           Próxima
-        </Link>
+        </BotaoLink>
       ) : (
-        <span className={inerte}>Próxima</span>
+        <span className={inerte} aria-hidden="true">
+          Próxima
+        </span>
       )}
     </nav>
   );

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { BotaoLink } from "@/components/ui/botao";
 
 /**
  * Ponte para a página de serviços.
@@ -23,12 +23,14 @@ export function ChamadaServicos() {
           </p>
         </div>
 
-        <Link
+        <BotaoLink
           href="/servicos"
-          className="shrink-0 border-2 border-tinta px-8 py-4 text-base font-bold uppercase tracking-wide text-tinta transition hover:bg-tinta hover:text-white"
+          variante="contorno"
+          tamanho="grande"
+          className="shrink-0 border-2"
         >
           Ver os serviços
-        </Link>
+        </BotaoLink>
       </div>
     </section>
   );

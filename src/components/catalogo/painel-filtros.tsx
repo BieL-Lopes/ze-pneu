@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { IconeChevron } from "@/components/icones";
+import { classesDeBotao } from "@/components/ui/botao";
 
 /**
  * Envolve as facetas para que, no celular, elas não empurrem os produtos para
@@ -30,7 +31,7 @@ export function PainelFiltros({
         onClick={() => setAberto((a) => !a)}
         aria-expanded={aberto}
         aria-controls="painel-filtros"
-        className="mb-4 flex w-full items-center justify-between border border-tinta px-4 py-3 text-sm font-bold uppercase tracking-wide text-tinta transition hover:bg-neutral-100 lg:hidden"
+        className={classesDeBotao({ variante: "contorno", extra: "mb-4 w-full justify-between hover:bg-neutral-100 hover:text-tinta lg:hidden" })}
       >
         <span className="flex items-center gap-2">
           Filtrar

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AROS_POPULARES } from "@/core/catalog/medidas-padrao";
+import { BotaoLink } from "@/components/ui/botao";
 
 /**
  * Atalhos por aro.
@@ -11,13 +12,15 @@ export function AtalhosAro() {
   return (
     <nav aria-label="Buscar por aro" className="flex flex-wrap gap-3">
       {AROS_POPULARES.map((aro) => (
-        <Link
+        <BotaoLink
           key={aro}
           href={`/pneus?aro=${aro}`}
-          className="numerais-tabulares border border-neutral-300 px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-tinta transition hover:border-marca hover:bg-marca hover:text-white"
+          variante="sutil"
+          tamanho="pequeno"
+          className="numerais-tabulares hover:border-marca hover:bg-marca hover:text-white"
         >
           Aro {aro}
-        </Link>
+        </BotaoLink>
       ))}
       <Link
         href="/pneus"

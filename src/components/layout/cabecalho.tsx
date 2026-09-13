@@ -3,6 +3,7 @@ import { Busca } from "@/components/catalogo/busca";
 import { WhatsAppLink } from "@/components/whatsapp-link";
 import { IconeWhatsApp } from "@/components/icones";
 import { IconeCarrinho } from "@/components/icones-carrinho";
+import { classesDeBotao } from "@/components/ui/botao";
 
 const LINKS = [
   { href: "/pneus", rotulo: "Pneus" },
@@ -28,7 +29,7 @@ export function Cabecalho() {
           <Busca />
         </div>
 
-        <nav className="ml-auto flex items-center gap-5 text-sm">
+        <nav className="ml-auto flex flex-wrap items-center justify-end gap-x-5 gap-y-3 text-sm">
           {LINKS.map((link) => (
             <Link
               key={link.href}
@@ -47,7 +48,7 @@ export function Cabecalho() {
           </Link>
           <WhatsAppLink
             mensagem="Olá! Vim pelo site do Zé Pneu."
-            className="flex items-center gap-2 rounded-md bg-marca px-4 py-2 font-bold whitespace-nowrap text-white transition hover:bg-marca-escura"
+            className={classesDeBotao({ tamanho: "pequeno", extra: "whitespace-nowrap" })}
           >
             <IconeWhatsApp className="h-4 w-4" />
             WhatsApp
