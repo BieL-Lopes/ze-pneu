@@ -28,7 +28,7 @@ export function Cabecalho() {
           <Busca />
         </div>
 
-        <nav className="ml-auto flex items-center gap-5 text-sm">
+        <nav className="ml-auto flex flex-wrap items-center justify-end gap-x-5 gap-y-3 text-sm">
           {LINKS.map((link) => (
             <Link
               key={link.href}

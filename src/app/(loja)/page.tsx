@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getCatalogService, getConfiguracoes } from "@/lib/container";
 import { ProductCard } from "@/components/produto/product-card";
 import { FaixaPromocional } from "@/components/home/faixa-promocional";
@@ -7,6 +8,7 @@ import { AtalhosAro } from "@/components/home/atalhos-aro";
 import { Marcas } from "@/components/home/marcas";
 import { Motivos } from "@/components/home/motivos";
 import { ChamadaServicos } from "@/components/home/chamada-servicos";
+import logoZePneu from "@/assets/logo-ze-pneu.png";
 
 // O catálogo muda por importação de CSV, não por deploy. Sem isto a home
 // ficaria congelada no conteúdo do último build, escondendo produto novo.
@@ -31,27 +33,41 @@ export default async function HomePage() {
         que é a relação preto-sobre-vermelho do próprio logo.
       */}
       <section className="bg-marca">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:py-24">
-          <h1 className="max-w-3xl text-balance text-4xl font-black uppercase italic leading-[1.04] tracking-tight text-white sm:text-6xl sm:leading-[0.98] lg:text-7xl">
-            O pneu certo, sem complicação
-          </h1>
-          <p className="mt-6 max-w-xl text-lg font-medium text-white">
-            Busque pela medida do seu pneu, compare marcas e receba em casa — ou
-            retire em Brasília.
-          </p>
-          <Link
-            href="/pneus"
-            className="mt-10 inline-block rounded-md bg-tinta px-8 py-4 text-base font-bold uppercase tracking-wide text-white transition hover:bg-black"
-          >
-            Ver todos os pneus
-          </Link>
+        <div className="mx-auto flex max-w-7xl flex-col-reverse items-center gap-10 px-4 py-16 sm:py-20 lg:flex-row lg:justify-between lg:gap-16">
+          <div className="w-full lg:flex-1">
+            <h1 className="max-w-2xl text-balance text-4xl font-black uppercase italic leading-[1.04] tracking-tight text-white sm:text-6xl sm:leading-[0.98]">
+              O pneu certo, sem complicação
+            </h1>
+            <p className="mt-6 max-w-xl text-lg font-medium text-white">
+              Busque pela medida do seu pneu, compare marcas e receba em casa —
+              ou retire em Brasília.
+            </p>
+            <Link
+              href="/pneus"
+              className="mt-10 inline-block rounded-md bg-tinta px-8 py-4 text-base font-bold uppercase tracking-wide text-white transition hover:bg-black"
+            >
+              Ver todos os pneus
+            </Link>
+          </div>
+
+          {/*
+            priority porque o logo está acima da dobra: sem isso ele entra
+            depois do restante e o hero pisca vazio na primeira visita.
+          */}
+          <Image
+            src={logoZePneu}
+            alt="Zé Pneu"
+            priority
+            sizes="(max-width: 1024px) 200px, 340px"
+            className="h-auto w-[200px] shrink-0 sm:w-[260px] lg:w-[340px]"
+          />
         </div>
       </section>
 
       {/*
-        A busca por medida fica logo abaixo do hero, sobreposta ao limite entre
-        o campo vermelho e o branco: é a primeira coisa que a pessoa faz ao
-        chegar, e ela lê os três números na lateral do próprio pneu.
+        A busca por medida fica logo abaixo do hero: é a primeira coisa que a
+        pessoa faz ao chegar, e ela lê os três números na lateral do próprio
+        pneu.
       */}
       <section className="bg-neutral-50">
         <div className="mx-auto max-w-7xl px-4 py-14">
