@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { FaixaTitulo } from "@/components/layout/faixa-titulo";
 import { WhatsAppLink } from "@/components/whatsapp-link";
 import { IconeWhatsApp } from "@/components/icones";
+import { BotaoLink, classesDeBotao } from "@/components/ui/botao";
 
 export const metadata: Metadata = {
   title: "Serviços",
@@ -62,7 +62,7 @@ export default function ServicosPage() {
 
       <div className="mx-auto max-w-5xl px-4 py-16">
         <section className="border-t-4 border-marca pt-8">
-          <span className="inline-block bg-marca px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
+          <span className="inline-block rounded-controle bg-marca px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
             Disponível agora
           </span>
           <h2 className="mt-5 text-3xl font-black uppercase italic tracking-tight text-tinta sm:text-4xl">
@@ -73,12 +73,9 @@ export default function ServicosPage() {
             nacional. Encontre a medida certa, compare marcas e preços, e receba
             em casa — ou retire em Brasília.
           </p>
-          <Link
-            href="/pneus"
-            className="mt-8 inline-block bg-marca px-8 py-4 text-base font-bold uppercase tracking-wide text-white transition hover:bg-marca-escura"
-          >
+          <BotaoLink href="/pneus" tamanho="grande" className="mt-8">
             Ver pneus
-          </Link>
+          </BotaoLink>
         </section>
 
         <section className="mt-24">
@@ -96,7 +93,7 @@ export default function ServicosPage() {
                 key={servico.nome}
                 className="border-t border-neutral-200 py-10"
               >
-                <span className="inline-block border border-tinta px-3 py-1 text-xs font-bold uppercase tracking-widest text-tinta">
+                <span className="inline-block rounded-controle border border-tinta px-3 py-1 text-xs font-bold uppercase tracking-widest text-tinta">
                   Em breve
                 </span>
                 <h3 className="mt-5 text-2xl font-black uppercase italic tracking-tight text-tinta">
@@ -107,7 +104,7 @@ export default function ServicosPage() {
                 </p>
                 <WhatsAppLink
                   mensagem={servico.interesse}
-                  className="mt-6 inline-flex items-center gap-2 border border-tinta px-6 py-3 text-sm font-bold uppercase tracking-wide text-tinta transition hover:bg-tinta hover:text-white"
+                  className={classesDeBotao({ variante: "contorno", extra: "mt-6" })}
                 >
                   <IconeWhatsApp className="h-4 w-4" />
                   Quero saber quando lançar
@@ -118,7 +115,7 @@ export default function ServicosPage() {
         </section>
 
         <section className="mt-24 bg-tinta p-10 sm:p-14">
-          <span className="inline-block border border-white px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
+          <span className="inline-block rounded-controle border border-white px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
             Em breve
           </span>
           <h2 className="mt-5 text-3xl font-black uppercase italic tracking-tight text-white">
@@ -131,7 +128,7 @@ export default function ServicosPage() {
           </p>
           <WhatsAppLink
             mensagem="Olá! Tenho interesse em ser franqueado do Zé Pneu."
-            className="mt-8 inline-flex items-center gap-2 bg-marca px-8 py-4 text-base font-bold uppercase tracking-wide text-white transition hover:bg-marca-escura"
+            className={classesDeBotao({ tamanho: "grande", extra: "mt-8" })}
           >
             <IconeWhatsApp className="h-5 w-5" />
             Quero ser franqueado

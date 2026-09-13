@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { definirItemDoCarrinho } from "@/app/(loja)/carrinho/acoes";
 import { IconeCarrinho } from "@/components/icones-carrinho";
 import { LIMITE_POR_ITEM } from "@/core/cart/cart-totals";
+import { Botao, classesDeCampo } from "@/components/ui/botao";
 
 export function BotaoAdicionar({
   variantId,
@@ -20,7 +21,7 @@ export function BotaoAdicionar({
 
   if (disponivel <= 0) {
     return (
-      <p className="mt-8 border border-neutral-300 px-6 py-4 text-center text-sm font-bold uppercase tracking-wide text-tinta-media">
+      <p className="mt-8 rounded-controle border border-neutral-300 px-6 py-4 text-center text-sm font-bold uppercase tracking-wide text-tinta-media">
         Esgotado nesta medida
       </p>
     );
@@ -51,7 +52,7 @@ export function BotaoAdicionar({
           id="quantidade"
           value={quantidade}
           onChange={(e) => setQuantidade(Number(e.target.value))}
-          className="numerais-tabulares border border-neutral-300 px-4 py-4 font-bold text-tinta"
+          className={classesDeCampo("numerais-tabulares py-4 font-bold")}
         >
           {Array.from({ length: maximo }, (_, i) => i + 1).map((n) => (
             <option key={n} value={n}>
@@ -60,15 +61,15 @@ export function BotaoAdicionar({
           ))}
         </select>
 
-        <button
-          type="button"
+        <Botao
           onClick={adicionar}
           disabled={pendente}
-          className="flex flex-1 items-center justify-center gap-2 bg-marca px-6 py-4 text-base font-bold uppercase tracking-wide text-white transition hover:bg-marca-escura disabled:opacity-60"
+          tamanho="grande"
+          className="flex-1 disabled:bg-marca disabled:opacity-60"
         >
           <IconeCarrinho className="h-5 w-5" />
           {pendente ? "Adicionando..." : "Adicionar ao carrinho"}
-        </button>
+        </Botao>
       </div>
 
       {/* Escassez real, lida do estoque — não é gatilho de marketing inventado. */}

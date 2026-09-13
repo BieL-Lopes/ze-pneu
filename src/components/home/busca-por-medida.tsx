@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LARGURAS, PERFIS, AROS } from "@/core/catalog/medidas-padrao";
 import { IconeBusca } from "@/components/icones";
+import { Botao, classesDeCampo } from "@/components/ui/botao";
 
 type Campo = "largura" | "perfil" | "aro";
 
@@ -62,7 +63,7 @@ export function BuscaPorMedida() {
             id={`medida-${campo}`}
             value={valores[campo]}
             onChange={(e) => definir(campo, e.target.value)}
-            className="numerais-tabulares w-full border border-neutral-300 bg-white px-4 py-3.5 font-bold text-tinta focus:border-marca focus:outline-none"
+            className={classesDeCampo("numerais-tabulares w-full py-3.5 font-bold")}
           >
             <option value="">Todas</option>
             {opcoes.map((n) => (
@@ -75,13 +76,10 @@ export function BuscaPorMedida() {
       ))}
 
       <div className="flex items-end sm:col-span-2 lg:col-span-1">
-        <button
-          type="submit"
-          className="flex w-full items-center justify-center gap-2 bg-marca px-8 py-3.5 font-bold uppercase tracking-wide text-white transition hover:bg-marca-escura"
-        >
+        <Botao type="submit" tamanho="grande" larguraTotal className="py-3.5">
           <IconeBusca className="h-5 w-5" />
           Buscar
-        </button>
+        </Botao>
       </div>
     </form>
   );

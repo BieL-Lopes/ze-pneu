@@ -16,7 +16,7 @@ export function Marcas({ marcas }: { marcas: FacetCount[] }) {
         Marcas
       </h2>
 
-      <ul className="mt-8 grid grid-cols-2 gap-px bg-neutral-200 sm:grid-cols-3 lg:grid-cols-6">
+      <ul className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-controle bg-neutral-200 sm:grid-cols-3 lg:grid-cols-6">
         {marcas.map((marca) => (
           <li key={marca.value}>
             <Link

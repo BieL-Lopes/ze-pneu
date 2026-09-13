@@ -11,6 +11,7 @@ import {
   removerDoCarrinho,
 } from "@/app/(loja)/carrinho/acoes";
 import { IconeLixeira } from "@/components/icones-carrinho";
+import { classesDeCampo } from "@/components/ui/botao";
 
 export function LinhaDoCarrinho({ item }: { item: CartItem }) {
   const [pendente, iniciar] = useTransition();
@@ -72,7 +73,7 @@ export function LinhaDoCarrinho({ item }: { item: CartItem }) {
         value={item.quantity}
         disabled={pendente || item.disponivel === 0}
         onChange={(e) => acao(definirItemDoCarrinho, Number(e.target.value))}
-        className="numerais-tabulares border border-neutral-300 px-3 py-2 font-bold text-tinta disabled:opacity-50"
+        className={classesDeCampo("numerais-tabulares px-3 py-2 font-bold")}
       >
         {Array.from({ length: Math.max(maximo, 1) }, (_, i) => i + 1).map(
           (n) => (

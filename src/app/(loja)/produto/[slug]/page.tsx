@@ -4,6 +4,7 @@ import { getCatalogService } from "@/lib/container";
 import { SeletorMedida } from "@/components/produto/seletor-medida";
 import { WhatsAppLink } from "@/components/whatsapp-link";
 import { IconeWhatsApp } from "@/components/icones";
+import { classesDeBotao } from "@/components/ui/botao";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -70,7 +71,7 @@ export default async function ProdutoPage({ params }: Props) {
 
           <WhatsAppLink
             mensagem={`Olá! Tenho uma dúvida sobre o ${produto.brandName} ${produto.name}.`}
-            className="mt-3 flex w-full items-center justify-center gap-2 border border-tinta px-6 py-4 text-base font-bold uppercase tracking-wide text-tinta transition hover:bg-tinta hover:text-white"
+            className={classesDeBotao({ variante: "contorno", tamanho: "grande", larguraTotal: true, extra: "mt-3" })}
           >
             <IconeWhatsApp className="h-5 w-5" />
             Tirar dúvida no WhatsApp

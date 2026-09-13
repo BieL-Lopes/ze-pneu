@@ -5,6 +5,7 @@ import { tokenDoCarrinho } from "@/lib/cart-cookie";
 import { calcularTotais } from "@/core/cart/cart-totals";
 import { formatBRL } from "@/lib/format";
 import { LinhaDoCarrinho } from "@/components/carrinho/linha-do-carrinho";
+import { Botao, BotaoLink } from "@/components/ui/botao";
 
 export const metadata: Metadata = {
   title: "Carrinho",
@@ -26,14 +27,11 @@ export default async function CarrinhoPage() {
       </h1>
 
       {itens.length === 0 ? (
-        <div className="mt-12 border border-dashed border-neutral-300 p-16 text-center">
+        <div className="mt-12 rounded-controle border border-dashed border-neutral-300 p-16 text-center">
           <p className="text-tinta-media">Seu carrinho está vazio.</p>
-          <Link
-            href="/pneus"
-            className="mt-6 inline-block bg-marca px-8 py-4 text-base font-bold uppercase tracking-wide text-white transition hover:bg-marca-escura"
-          >
+          <BotaoLink href="/pneus" tamanho="grande" className="mt-6">
             Ver pneus
-          </Link>
+          </BotaoLink>
         </div>
       ) : (
         <>
@@ -75,14 +73,15 @@ export default async function CarrinhoPage() {
               visível e inerte é honesto com quem navega e evita que o layout
               mude de forma quando o checkout chegar.
             */}
-            <button
-              type="button"
+            <Botao
               disabled
+              tamanho="grande"
+              larguraTotal
               title="O checkout entra na próxima etapa do projeto"
-              className="mt-6 w-full bg-marca px-6 py-4 text-base font-bold uppercase tracking-wide text-white disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
+              className="mt-6"
             >
               Finalizar compra
-            </button>
+            </Botao>
 
             <Link
               href="/pneus"

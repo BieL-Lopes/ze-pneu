@@ -6,9 +6,9 @@ export function ProductCard({ produto }: { produto: ProductSummary }) {
   return (
     <Link
       href={`/produto/${produto.slug}`}
-      className="group flex flex-col border border-neutral-200 bg-white p-4 transition hover:border-marca"
+      className="group flex flex-col rounded-controle border border-neutral-200 bg-white p-4 transition hover:border-marca"
     >
-      <div className="mb-4 aspect-square overflow-hidden bg-neutral-100">
+      <div className="mb-4 aspect-square overflow-hidden rounded-controle bg-neutral-100">
         {produto.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

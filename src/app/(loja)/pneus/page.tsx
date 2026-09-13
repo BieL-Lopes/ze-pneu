@@ -86,7 +86,7 @@ export default async function PneusPage({ searchParams }: Props) {
 
         <section>
           {items.length === 0 ? (
-            <p className="border border-dashed border-neutral-300 p-16 text-center text-tinta-media">
+            <p className="rounded-controle border border-dashed border-neutral-300 p-16 text-center text-tinta-media">
               Não encontramos pneus com esses filtros. Tente remover algum ou
               buscar pela medida, como 205/55 R16.
             </p>

@@ -8,6 +8,7 @@ import { AtalhosAro } from "@/components/home/atalhos-aro";
 import { Marcas } from "@/components/home/marcas";
 import { Motivos } from "@/components/home/motivos";
 import { ChamadaServicos } from "@/components/home/chamada-servicos";
+import { BotaoLink } from "@/components/ui/botao";
 import logoZePneu from "@/assets/logo-ze-pneu.png";
 
 // O catálogo muda por importação de CSV, não por deploy. Sem isto a home
@@ -42,12 +43,9 @@ export default async function HomePage() {
               Busque pela medida do seu pneu, compare marcas e receba em casa —
               ou retire em Brasília.
             </p>
-            <Link
-              href="/pneus"
-              className="mt-10 inline-block rounded-md bg-tinta px-8 py-4 text-base font-bold uppercase tracking-wide text-white transition hover:bg-black"
-            >
+            <BotaoLink href="/pneus" variante="escura" tamanho="grande" className="mt-10">
               Ver todos os pneus
-            </Link>
+            </BotaoLink>
           </div>
 
           {/*
