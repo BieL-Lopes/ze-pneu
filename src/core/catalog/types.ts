@@ -1,3 +1,5 @@
+import type { TireSize } from "./tire-size";
+
 export type FacetCount = { value: string; label: string; count: number };
 
 export type Facets = {
@@ -37,6 +39,8 @@ export type VariantDetail = {
   sku: string;
   priceCents: number;
   sizeLabel: string | null;
+  /** Medida decomposta, para a tabela de especificações. Null em acessório. */
+  medida: TireSize | null;
   vehicleType: string | null;
   /** Unidades que o cliente pode comprar agora. Zero é esgotado. */
   disponivel: number;

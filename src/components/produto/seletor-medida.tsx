@@ -1,15 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import type { VariantDetail } from "@/core/catalog/types";
 import { formatBRL } from "@/lib/format";
 import { BotaoAdicionar } from "@/components/produto/botao-adicionar";
 import { classesDeBotao } from "@/components/ui/botao";
+import { useSelecaoDeMedida } from "@/components/produto/selecao-de-medida";
 
-export function SeletorMedida({ variantes }: { variantes: VariantDetail[] }) {
-  const [selecionadaId, setSelecionadaId] = useState(variantes[0]?.id ?? "");
-  const selecionada =
-    variantes.find((v) => v.id === selecionadaId) ?? variantes[0];
+export function SeletorMedida() {
+  const { variantes, selecionada, selecionar } = useSelecaoDeMedida();
 
   if (!selecionada) return null;
 
@@ -27,13 +24,13 @@ export function SeletorMedida({ variantes }: { variantes: VariantDetail[] }) {
                 <button
                   key={v.id}
                   type="button"
-                  onClick={() => setSelecionadaId(v.id)}
-                  aria-pressed={v.id === selecionadaId}
+                  onClick={() => selecionar(v.id)}
+                  aria-pressed={v.id === selecionada.id}
                   className={classesDeBotao({
-                    variante: v.id === selecionadaId ? "primaria" : "sutil",
+                    variante: v.id === selecionada.id ? "primaria" : "sutil",
                     tamanho: "pequeno",
                     extra: `numerais-tabulares ${
-                      esgotada && v.id !== selecionadaId
+                      esgotada && v.id !== selecionada.id
                         ? "border-neutral-200 text-neutral-400 line-through"
                         : ""
                     }`,

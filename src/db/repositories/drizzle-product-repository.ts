@@ -240,6 +240,16 @@ export function createDrizzleProductRepository(db: Database): ProductRepository 
           sku: v.sku,
           priceCents: v.priceCents,
           sizeLabel: rotuloMedida(v),
+          medida:
+            v.width !== null && v.profile !== null && v.rim !== null
+              ? {
+                  width: v.width,
+                  profile: v.profile,
+                  rim: v.rim,
+                  loadIndex: v.loadIndex,
+                  speedRating: v.speedRating,
+                }
+              : null,
           vehicleType: v.vehicleType,
           disponivel: Math.max(0, (v.onHand ?? 0) - (v.reserved ?? 0)),
         })),
