@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getCartRepository } from "@/lib/container";
-import { tokenDoCarrinho } from "@/lib/cart-cookie";
+import { lerTokenDoCarrinho } from "@/lib/cart-cookie";
 import { calcularTotais } from "@/core/cart/cart-totals";
 import { formatBRL } from "@/lib/format";
 import { LinhaDoCarrinho } from "@/components/carrinho/linha-do-carrinho";
@@ -16,8 +16,12 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function CarrinhoPage() {
-  const carrinho = await getCartRepository();
-  const { itens } = await carrinho.obterOuCriar(await tokenDoCarrinho());
+  // Sem cookie, o visitante ainda não adicionou nada: carrinho vazio, sem
+  // tocar no banco.
+  const token = await lerTokenDoCarrinho();
+  const itens = token
+    ? (await (await getCartRepository()).obterOuCriar(token)).itens
+    : [];
   const totais = calcularTotais(itens);
 
   return (

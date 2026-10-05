@@ -6,7 +6,7 @@ import {
   getPaymentProvider,
   getShippingProvider,
 } from "@/lib/container";
-import { tokenDoCarrinho } from "@/lib/cart-cookie";
+import { lerTokenDoCarrinho } from "@/lib/cart-cookie";
 import { calcularTotais } from "@/core/cart/cart-totals";
 import { FormularioCheckout } from "@/components/checkout/formulario-checkout";
 import { WhatsAppLink } from "@/components/whatsapp-link";
@@ -22,8 +22,9 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function CheckoutPage() {
-  const carrinho = await getCartRepository();
-  const { itens } = await carrinho.obterOuCriar(await tokenDoCarrinho());
+  const token = await lerTokenDoCarrinho();
+  if (!token) redirect("/carrinho");
+  const { itens } = await (await getCartRepository()).obterOuCriar(token);
   const totais = calcularTotais(itens);
 
   // O carrinho é onde se resolve item esgotado ou acima do estoque; aqui só
