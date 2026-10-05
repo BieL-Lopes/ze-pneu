@@ -114,8 +114,10 @@ async function main() {
       }
     }
 
-    // Reimportar o mesmo SKU atualiza o preço em vez de falhar — é assim que o
-    // cliente faz reajuste de tabela: reexporta a planilha inteira e roda de novo.
+    // Reimportar o mesmo SKU atualiza preço e peso em vez de falhar — é assim
+    // que o cliente faz reajuste de tabela: reexporta a planilha inteira e roda
+    // de novo. O peso entra junto porque a primeira carga pode vir com peso
+    // estimado, a ser trocado pelo real antes do frete entrar no ar.
     await db
       .insert(productVariants)
       .values({
@@ -136,7 +138,7 @@ async function main() {
       })
       .onConflictDoUpdate({
         target: productVariants.sku,
-        set: { priceCents: linha.precoCents },
+        set: { priceCents: linha.precoCents, weightGrams: linha.pesoGramas },
       });
 
     variantes++;

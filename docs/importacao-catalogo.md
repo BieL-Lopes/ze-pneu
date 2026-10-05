@@ -38,8 +38,21 @@ Linhas com erro são relatadas com o número da linha do arquivo (contando o
 cabeçalho como linha 1) e o motivo. As demais são importadas normalmente —
 uma célula ruim não derruba a planilha inteira.
 
-Rodar de novo com o mesmo SKU **atualiza o preço**. É assim que se faz reajuste
-de tabela: reexporta a planilha completa e roda o comando outra vez.
+Rodar de novo com o mesmo SKU **atualiza o preço e o peso**. É assim que se faz
+reajuste de tabela: reexporta a planilha completa e roda o comando outra vez.
+
+## Tabela da FARAD (Aptany)
+
+A tabela unificada da FARAD vem em PDF, sem SKU e sem peso. Na conversão para
+CSV o SKU é montado como `APT-<desenho>-<largura><perfil><aro>`, com `C` no fim
+para pneu comercial — por exemplo `APT-RA301-2254517` e `APT-RL106-2256516C`.
+A próxima tabela precisa gerar os **mesmos** SKUs, senão o reajuste cria
+produtos duplicados em vez de atualizar o preço.
+
+A carga de 18/08/2026 entrou com **peso estimado** pela medida
+(≈ 6,8×10⁻⁵ × largura × diâmetro externo, em kg; ×1,3 para comercial). Antes
+de ligar a cotação de frete, substituir pelo peso real reimportando a planilha
+com a coluna `peso_gramas` corrigida.
 
 ## Cadastro de produto novo
 
