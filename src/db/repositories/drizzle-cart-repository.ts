@@ -43,6 +43,10 @@ export function createDrizzleCartRepository(
         rim: productVariants.rim,
         loadIndex: productVariants.loadIndex,
         speedRating: productVariants.speedRating,
+        weightGrams: productVariants.weightGrams,
+        lengthMm: productVariants.lengthMm,
+        widthMm: productVariants.widthMm,
+        heightMm: productVariants.heightMm,
         productName: products.name,
         productSlug: products.slug,
       })
@@ -74,6 +78,12 @@ export function createDrizzleCartRepository(
       unitPriceCents: l.unitPriceCents,
       quantity: l.quantity,
       disponivel: porId.get(l.variantId)?.disponivel ?? 0,
+      envio: {
+        pesoGramas: l.weightGrams,
+        lengthMm: l.lengthMm,
+        widthMm: l.widthMm,
+        heightMm: l.heightMm,
+      },
     }));
 
     itens.sort((a, b) => a.productName.localeCompare(b.productName, "pt-BR"));

@@ -8,6 +8,15 @@ export type CartItem = {
   quantity: number;
   /** Estoque disponível agora, para avisar antes de o cliente ir ao checkout. */
   disponivel: number;
+  /** Peso e caixa de uma unidade, para cotar o frete. */
+  envio: DadosDeEnvio;
+};
+
+export type DadosDeEnvio = {
+  pesoGramas: number;
+  lengthMm: number;
+  widthMm: number;
+  heightMm: number;
 };
 
 export type Cart = {

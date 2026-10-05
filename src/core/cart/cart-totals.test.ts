@@ -16,6 +16,7 @@ function item(over: Partial<CartItem> = {}): CartItem {
     unitPriceCents: 65000,
     quantity: 1,
     disponivel: 10,
+    envio: { pesoGramas: 9000, lengthMm: 652, widthMm: 652, heightMm: 225 },
     ...over,
   };
 }

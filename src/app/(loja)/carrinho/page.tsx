@@ -56,7 +56,7 @@ export default async function CarrinhoPage() {
               </span>
             </div>
             <p className="mt-2 text-right text-sm text-tinta-media">
-              Frete calculado na próxima etapa.
+              Frete calculado pelo CEP no próximo passo. Retirada em Brasília é grátis.
             </p>
 
             {totais.temItemIndisponivel && (
@@ -69,19 +69,18 @@ export default async function CarrinhoPage() {
             )}
 
             {/*
-              Desabilitado de propósito: o checkout é o Plano 3. Deixar o botão
-              visível e inerte é honesto com quem navega e evita que o layout
-              mude de forma quando o checkout chegar.
+              Com item acima do estoque, o botão fica inerte: o checkout
+              recusaria de qualquer jeito, e é aqui que o cliente ajusta.
             */}
-            <Botao
-              disabled
-              tamanho="grande"
-              larguraTotal
-              title="O checkout entra na próxima etapa do projeto"
-              className="mt-6"
-            >
-              Finalizar compra
-            </Botao>
+            {totais.temItemIndisponivel ? (
+              <Botao disabled tamanho="grande" larguraTotal className="mt-6">
+                Finalizar compra
+              </Botao>
+            ) : (
+              <BotaoLink href="/checkout" tamanho="grande" larguraTotal className="mt-6">
+                Finalizar compra
+              </BotaoLink>
+            )}
 
             <Link
               href="/pneus"

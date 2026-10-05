@@ -9,6 +9,7 @@ import {
   productVariants,
 } from "@/db/schema";
 import { parseLinhasCatalogo } from "@/core/catalog/csv-import";
+import { dimensoesDaCaixa } from "@/core/catalog/dimensoes";
 
 type TipoVeiculo = "passeio" | "suv" | "carga" | "moto";
 const TIPOS_VALIDOS: TipoVeiculo[] = ["passeio", "suv", "carga", "moto"];
@@ -114,6 +115,13 @@ async function main() {
       }
     }
 
+    // Caixa pela medida: o frete cobra pelo volume, e uma caixa única fazia o
+    // aro 13 e o aro 24 custarem o mesmo. Acessório sem medida fica com a
+    // caixa padrão.
+    const caixa = linha.medida
+      ? dimensoesDaCaixa(linha.medida)
+      : { lengthMm: 640, widthMm: 640, heightMm: 210 };
+
     // Reimportar o mesmo SKU atualiza preço e peso em vez de falhar — é assim
     // que o cliente faz reajuste de tabela: reexporta a planilha inteira e roda
     // de novo. O peso entra junto porque a primeira carga pode vir com peso
@@ -132,13 +140,11 @@ async function main() {
         speedRating: linha.medida?.speedRating ?? null,
         vehicleType: tipoVeiculo(linha.tipoVeiculo),
         weightGrams: linha.pesoGramas,
-        lengthMm: 640,
-        widthMm: 640,
-        heightMm: 210,
+        ...caixa,
       })
       .onConflictDoUpdate({
         target: productVariants.sku,
-        set: { priceCents: linha.precoCents, weightGrams: linha.pesoGramas },
+        set: { priceCents: linha.precoCents, weightGrams: linha.pesoGramas, ...caixa },
       });
 
     variantes++;

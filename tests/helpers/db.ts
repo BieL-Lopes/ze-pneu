@@ -78,7 +78,7 @@ async function varrerOrfaos() {
   }
 }
 
-async function removerPorPrefixo(prefixo: string) {
+export async function removerPorPrefixo(prefixo: string) {
   const produtos = await testDb
     .select({ id: schema.products.id })
     .from(schema.products)
