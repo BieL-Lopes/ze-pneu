@@ -47,6 +47,7 @@ export const orders = pgTable(
     customerDocument: text("customer_document"),
     invoiceNumber: text("invoice_number"),
     invoiceKey: text("invoice_key"),
+    trackingCode: text("tracking_code"),
 
     // Segredo do link de acompanhamento. A referência sozinha é curta e
     // adivinhável, e a página do pedido mostra nome e endereço do comprador.

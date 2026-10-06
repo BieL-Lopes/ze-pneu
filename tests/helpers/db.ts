@@ -137,6 +137,10 @@ export async function removerPorPrefixo(prefixo: string) {
   }
 
   await testDb
+    .delete(schema.adminUsers)
+    .where(like(schema.adminUsers.email, `${prefixo}%`));
+
+  await testDb
     .delete(schema.categories)
     .where(like(schema.categories.slug, `${prefixo}%`));
   await testDb

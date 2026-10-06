@@ -10,6 +10,7 @@ import {
 } from "../../../tests/helpers/fakes";
 import { err } from "@/core/shared/result";
 import type { CartItem } from "@/core/cart/types";
+import type { RegrasDeFrete } from "@/core/shipping/regras-de-frete";
 
 const AGORA = new Date("2026-10-05T12:00:00Z");
 const MINUTO = 60_000;
@@ -45,6 +46,7 @@ function montar(
     frete?: ReturnType<typeof freteFalso> | null;
     pagamento?: ReturnType<typeof pagamentoFalso> | null;
     estoque?: ReturnType<typeof estoqueFalso>;
+    regrasDeFrete?: RegrasDeFrete;
   } = {},
 ) {
   const carrinhos = carrinhosFalsos(over.itens ?? [itemDeCarrinho()]);
@@ -59,6 +61,7 @@ function montar(
     pedidos: pedidos.repo,
     frete,
     pagamento: pagamento?.provider ?? null,
+    regrasDeFrete: over.regrasDeFrete,
     urls: {
       retorno: (ref, token) => `https://loja.test/pedido/${ref}?t=${token}`,
       notificacao: "https://loja.test/api/webhooks/mercado-pago",
@@ -179,6 +182,22 @@ describe("finalizar com entrega", () => {
 
     expect(r.ok).toBe(false);
     expect(estoque.repo.reservar).not.toHaveBeenCalled();
+  });
+
+  it("frete grátis e prazo de manuseio do painel valem também no fechamento", async () => {
+    const { servico, pedidos, pagamento } = montar({
+      regrasDeFrete: { prazoManuseioDias: 1, freteGratisAcimaCents: 50_000 },
+    });
+
+    const r = await servico.finalizar("t1", entrega);
+
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const pedido = pedidos.pedidos.get(r.value.referencia)!;
+    expect(pedido.shippingCents).toBe(0);
+    expect(pedido.totalCents).toBe(64876);
+    expect(pedido.recebimento.tipo === "entrega" && pedido.recebimento.frete.prazoDias).toBe(6);
+    expect(pagamento!.cobrancas[0].freteCents).toBe(0);
   });
 
   it("sem provedor de frete, a entrega fica indisponível", async () => {

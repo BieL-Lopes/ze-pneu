@@ -36,6 +36,13 @@ export interface StockRepository {
 
   consumirReserva(orderRef: string): Promise<Result<void, FalhaDeEstoque>>;
 
+  /**
+   * Devolve à prateleira o que um pedido pago baixou — pedido cancelado ou
+   * estornado com o pneu ainda na loja. Só age uma vez por pedido: chamar de
+   * novo devolve 0. Devolve quantas unidades voltaram.
+   */
+  devolverBaixa(orderRef: string, authorId: string): Promise<number>;
+
   ajustar(args: {
     variantId: string;
     delta: number;

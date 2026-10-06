@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Cabecalho } from "@/components/layout/cabecalho";
-import { Rodape } from "@/components/layout/rodape";
 import { siteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
@@ -20,9 +18,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className="flex min-h-screen flex-col bg-white text-neutral-900 antialiased">
-        <Cabecalho />
-        <div className="flex-1">{children}</div>
-        <Rodape />
+        {children}
       </body>
     </html>
   );

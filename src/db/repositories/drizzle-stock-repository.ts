@@ -279,6 +279,51 @@ export function createDrizzleStockRepository(
       return ok(undefined);
     },
 
+    async devolverBaixa(orderRef: string, authorId: string): Promise<number> {
+      return db.transaction(async (tx) => {
+        // Trocar o status primeiro, com o status esperado no WHERE, é o que
+        // impede a devolução dupla: o segundo clique não encontra nada.
+        const devolvidas = await tx
+          .update(stockReservations)
+          .set({ status: "devolvida" })
+          .where(
+            and(
+              eq(stockReservations.orderRef, orderRef),
+              eq(stockReservations.status, "consumida"),
+            ),
+          )
+          .returning();
+
+        let unidades = 0;
+        for (const r of devolvidas) {
+          await tx
+            .update(stockBalances)
+            .set({
+              onHand: sql`${stockBalances.onHand} + ${r.quantity}`,
+              updatedAt: new Date(),
+            })
+            .where(
+              and(
+                eq(stockBalances.variantId, r.variantId),
+                eq(stockBalances.locationId, r.locationId),
+              ),
+            );
+
+          await tx.insert(stockMovements).values({
+            variantId: r.variantId,
+            locationId: r.locationId,
+            kind: "estorno",
+            quantity: r.quantity,
+            reason: "Pedido cancelado após o pagamento",
+            orderRef,
+            authorId,
+          });
+          unidades += r.quantity;
+        }
+        return unidades;
+      });
+    },
+
     async ajustar({ variantId, delta, reason, authorId }) {
       await db.transaction(async (tx) => {
         await tx

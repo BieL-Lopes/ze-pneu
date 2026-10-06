@@ -21,6 +21,8 @@ function pedido(status: OrderStatus = "aguardando_pagamento"): Pedido {
     status,
     comprador: { nome: "Maria", email: "m@exemplo.test", telefone: "61999990000", cpf: "52998224725" },
     recebimento: { tipo: "retirada" },
+    rastreio: null,
+    notaFiscal: null,
     itens: [],
     itemsTotalCents: 64876,
     shippingCents: 0,

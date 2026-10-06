@@ -15,6 +15,7 @@ import { createDrizzleStockRepository } from "@/db/repositories/drizzle-stock-re
 import { createDrizzleCartRepository } from "@/db/repositories/drizzle-cart-repository";
 import { createConfirmacaoDePagamento } from "@/core/orders/confirmacao-pagamento";
 import { createCheckoutService } from "@/core/orders/checkout-service";
+import { createGestaoDePedidos } from "@/core/orders/gestao-de-pedidos";
 import type { NovoPedido } from "@/core/orders/order-repository";
 
 let cat: CatalogoDeTeste;
@@ -175,5 +176,48 @@ describe("expiração", () => {
     expect((await pedidos.porReferencia(noPrazo.reference))!.status).toBe("aguardando_pagamento");
     const [saldo] = await estoque.disponibilidadeDe([variante.id]);
     expect(saldo.reserved).toBe(2);
+  });
+});
+
+describe("gestão pelo painel contra o banco real", () => {
+  async function pedidoPago() {
+    const variante = cat.variantes[0];
+    await estoque.registrarEntrada({ variantId: variante.id, quantity: 5, reason: "teste", authorId: "teste" });
+    const novo = novoPedido();
+    await estoque.reservar({ orderRef: novo.reference, itens: [{ variantId: variante.id, quantity: 2 }], expiresAt: novo.expiresAt });
+    await pedidos.criar(novo);
+    await pedidos.transicionar(novo.reference, "aguardando_pagamento", "pago", "teste");
+    await estoque.consumirReserva(novo.reference);
+    return { ref: novo.reference, variante };
+  }
+
+  it("cancelar pedido pago devolve o pneu ao estoque, uma vez só, com autor no histórico", async () => {
+    const { ref, variante } = await pedidoPago();
+    const gestao = createGestaoDePedidos({ pedidos, estoque });
+
+    const r = await gestao.mudarStatus(ref, "cancelado", { autor: "ana@zepneu.test" });
+    expect(r.ok).toBe(true);
+    // Chamada repetida (duplo clique, outra aba) não devolve de novo.
+    expect(await estoque.devolverBaixa(ref, "ana@zepneu.test")).toBe(0);
+
+    const [saldo] = await estoque.disponibilidadeDe([variante.id]);
+    expect(saldo.onHand).toBe(5);
+    expect(saldo.reserved).toBe(0);
+
+    const extrato = await estoque.extrato(variante.id);
+    expect(extrato.filter((m) => m.kind === "estorno")).toHaveLength(1);
+
+    const eventos = await pedidos.eventos(ref);
+    expect(eventos.find((e) => e.toStatus === "cancelado" && e.fromStatus === "pago")?.autor).toBe("ana@zepneu.test");
+  });
+
+  it("grava rastreio e nota fiscal no pedido", async () => {
+    const { ref } = await pedidoPago();
+    await pedidos.definirRastreio(ref, "AA123456789BR");
+    await pedidos.definirNotaFiscal(ref, { numero: "1234", chave: "3".repeat(44) });
+
+    const lido = await pedidos.porReferencia(ref);
+    expect(lido!.rastreio).toBe("AA123456789BR");
+    expect(lido!.notaFiscal).toEqual({ numero: "1234", chave: "3".repeat(44) });
   });
 });

@@ -8,6 +8,9 @@ import { createDrizzleOrderRepository } from "@/db/repositories/drizzle-order-re
 import { createCatalogService } from "@/core/catalog/catalog-service";
 import { createCheckoutService } from "@/core/orders/checkout-service";
 import { createConfirmacaoDePagamento } from "@/core/orders/confirmacao-pagamento";
+import { createGestaoDePedidos } from "@/core/orders/gestao-de-pedidos";
+import { createOperacoesDeEstoque } from "@/core/stock/operacoes-de-estoque";
+import { CHAVES_DE_FRETE, regrasDasConfiguracoes } from "@/core/shipping/regras-de-frete";
 import type { PaymentProvider } from "@/core/payment/payment-provider";
 import type { ShippingProvider } from "@/core/shipping/shipping-provider";
 import { normalizarCep } from "@/core/shipping/cep";
@@ -138,9 +141,9 @@ export async function getCheckoutService() {
     pedidos: getOrderRepository(),
     frete: getShippingProvider(),
     pagamento: getPaymentProvider(),
+    regrasDeFrete: regrasDasConfiguracoes(await getConfiguracoes(CHAVES_DE_FRETE)),
     urls: {
-      retorno: (ref, token) =>
-        new URL(`/pedido/${ref}?t=${encodeURIComponent(token)}`, base).toString(),
+      retorno: linkDoPedido,
       // `source_news=webhooks` pede só o formato novo, que vem assinado. Sem
       // isso o Mercado Pago também manda o IPN antigo, que não tem assinatura.
       notificacao: new URL("/api/webhooks/mercado-pago?source_news=webhooks", base).toString(),
@@ -157,4 +160,20 @@ export async function getConfirmacaoDePagamento() {
     carrinhos: await getCartRepository(),
     pagamento,
   });
+}
+
+export async function getGestaoDePedidos() {
+  return createGestaoDePedidos({
+    pedidos: getOrderRepository(),
+    estoque: await getStockRepository(),
+  });
+}
+
+/** Link de acompanhamento que o cliente recebeu, para reenviar pelo WhatsApp. */
+export function linkDoPedido(referencia: string, token: string): string {
+  return new URL(`/pedido/${referencia}?t=${encodeURIComponent(token)}`, siteUrl()).toString();
+}
+
+export async function getOperacoesDeEstoque() {
+  return createOperacoesDeEstoque({ estoque: await getStockRepository() });
 }

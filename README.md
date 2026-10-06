@@ -7,6 +7,8 @@ em Brasília.
 
 - [Design da Fase 1](docs/superpowers/specs/2026-09-10-ecommerce-fase1-design.md) — arquitetura, modelo de domínio e corte de escopo
 - [Plano 1: Fundação e Catálogo](docs/superpowers/plans/2026-09-10-fundacao-e-catalogo.md) — plano de implementação em execução
+- [Checkout — configuração](docs/checkout-configuracao.md) — credenciais do Mercado Pago e do Melhor Envio
+- [Painel administrativo](docs/painel-administrativo.md) — primeiro acesso, papéis e o que cada tela faz
 
 ## Rodando localmente
 
@@ -28,6 +30,7 @@ npm run dev
 | `npm run db:generate` | Gera migração a partir do schema |
 | `npm run db:migrate` | Aplica migrações pendentes |
 | `npm run import:catalogo -- arquivo.csv` | Importa catálogo ([formato](docs/importacao-catalogo.md)) |
+| `npm run admin:criar -- email "Nome"` | Cria o primeiro administrador do painel |
 
 ## Arquitetura em uma frase
 

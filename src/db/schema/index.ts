@@ -7,3 +7,4 @@ export * from "./stock";
 export * from "./carts";
 export * from "./orders";
 export * from "./site-settings";
+export * from "./admin";

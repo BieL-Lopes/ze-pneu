@@ -61,6 +61,8 @@ function paraPedido(l: LinhaDoPedido, itens: LinhaDoItem[]): Pedido {
     cartToken: l.cartToken ?? "",
     expiresAt: l.expiresAt ?? l.createdAt,
     paymentUrl: l.paymentUrl,
+    rastreio: l.trackingCode,
+    notaFiscal: l.invoiceNumber ? { numero: l.invoiceNumber, chave: l.invoiceKey } : null,
     createdAt: l.createdAt,
   };
 }
@@ -148,6 +150,7 @@ export function createDrizzleOrderRepository(db: Database): OrderRepository {
           fromStatus: orderEvents.fromStatus,
           toStatus: orderEvents.toStatus,
           note: orderEvents.note,
+          autor: orderEvents.authorId,
           createdAt: orderEvents.createdAt,
         })
         .from(orderEvents)
@@ -162,7 +165,7 @@ export function createDrizzleOrderRepository(db: Database): OrderRepository {
         .where(eq(orders.reference, reference));
     },
 
-    async transicionar(reference, de, para, nota) {
+    async transicionar(reference, de, para, nota, autor) {
       return db.transaction(async (tx) => {
         // Uma instrução só, com o status esperado no WHERE: o Postgres trava a
         // linha, e a segunda transação concorrente encontra o status já
@@ -179,12 +182,13 @@ export function createDrizzleOrderRepository(db: Database): OrderRepository {
           fromStatus: de,
           toStatus: para,
           note: nota,
+          authorId: autor ?? null,
         });
         return true;
       });
     },
 
-    async anotar(reference, nota) {
+    async anotar(reference, nota, autor) {
       const pedido = await idDe(reference);
       if (!pedido) return;
       await db.insert(orderEvents).values({
@@ -192,7 +196,22 @@ export function createDrizzleOrderRepository(db: Database): OrderRepository {
         fromStatus: pedido.status,
         toStatus: pedido.status,
         note: nota,
+        authorId: autor ?? null,
       });
+    },
+
+    async definirRastreio(reference, codigo) {
+      await db
+        .update(orders)
+        .set({ trackingCode: codigo, updatedAt: new Date() })
+        .where(eq(orders.reference, reference));
+    },
+
+    async definirNotaFiscal(reference, nota) {
+      await db
+        .update(orders)
+        .set({ invoiceNumber: nota?.numero ?? null, invoiceKey: nota?.chave ?? null, updatedAt: new Date() })
+        .where(eq(orders.reference, reference));
     },
 
     async registrarPagamento(reference, provedor, pagamento) {

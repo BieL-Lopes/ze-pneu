@@ -84,7 +84,9 @@ export const stockReservations = pgTable(
     // Mesma razão do movimento: a referência do pedido, não um uuid.
     orderRef: text("order_ref").notNull(),
     quantity: integer("quantity").notNull(),
-    status: text("status", { enum: ["ativa", "consumida", "liberada"] })
+    // "devolvida": pedido pago e depois cancelado, com o pneu de volta à
+    // prateleira. Marca a reserva para que a devolução não aconteça duas vezes.
+    status: text("status", { enum: ["ativa", "consumida", "liberada", "devolvida"] })
       .notNull()
       .default("ativa"),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),

@@ -218,7 +218,7 @@ export function FormularioCheckout({
                               </span>
                               <span className="block text-sm text-tinta-media">{prazo(o.prazoDias)}</span>
                             </span>
-                            <span className="numerais-tabulares font-black text-tinta">{formatBRL(o.precoCents)}</span>
+                            <span className="numerais-tabulares font-black text-tinta">{o.precoCents === 0 ? "Grátis" : formatBRL(o.precoCents)}</span>
                           </label>
                         </li>
                       ))}

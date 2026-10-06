@@ -82,6 +82,12 @@ export function estoqueFalso(falha?: Awaited<ReturnType<StockRepository["reserva
       return ok(undefined);
     }),
     liberarVencidas: vi.fn(async () => 0),
+    devolverBaixa: vi.fn(async (ref: string) => {
+      const r = reservas.get(ref);
+      if (r?.status !== "consumida") return 0;
+      r.status = "devolvida";
+      return 2;
+    }),
   };
   return { repo, reservas };
 }
@@ -102,6 +108,8 @@ export function pedidosFalsos(iniciais: Pedido[] = []) {
         id: `id-${novo.reference}`,
         status: "aguardando_pagamento",
         paymentUrl: null,
+        rastreio: null,
+        notaFiscal: null,
         createdAt: new Date(),
       };
       pedidos.set(novo.reference, pedido);
@@ -118,16 +126,24 @@ export function pedidosFalsos(iniciais: Pedido[] = []) {
       const p = pedidos.get(ref);
       if (p) p.paymentUrl = url;
     },
-    async transicionar(ref, de: OrderStatus, para: OrderStatus, nota) {
+    async transicionar(ref, de: OrderStatus, para: OrderStatus, nota, autor) {
       const p = pedidos.get(ref);
       if (!p || p.status !== de) return false;
       p.status = para;
-      evento(ref, { fromStatus: de, toStatus: para, note: nota });
+      evento(ref, { fromStatus: de, toStatus: para, note: nota, autor: autor ?? null });
       return true;
     },
-    async anotar(ref, nota) {
+    async anotar(ref, nota, autor) {
       const p = pedidos.get(ref);
-      if (p) evento(ref, { fromStatus: p.status, toStatus: p.status, note: nota });
+      if (p) evento(ref, { fromStatus: p.status, toStatus: p.status, note: nota, autor: autor ?? null });
+    },
+    async definirRastreio(ref, codigo) {
+      const p = pedidos.get(ref);
+      if (p) p.rastreio = codigo;
+    },
+    async definirNotaFiscal(ref, nota) {
+      const p = pedidos.get(ref);
+      if (p) p.notaFiscal = nota;
     },
     async registrarPagamento(ref, _provedor, pagamento) {
       pagamentos.push({ ref, pagamento });

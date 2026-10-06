@@ -57,7 +57,7 @@ function dividirLinha(linha: string): string[] {
 }
 
 /** Aceita "650.00", "650,00" e "1.250,90" — planilha brasileira exporta os três. */
-function precoParaCentavos(bruto: string): number | null {
+export function precoParaCentavos(bruto: string): number | null {
   const texto = bruto.trim();
   if (texto === "") return null;
 

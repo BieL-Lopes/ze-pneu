@@ -8,6 +8,7 @@ import type {
   Pacote,
   ShippingProvider,
 } from "@/core/shipping/shipping-provider";
+import { aplicarRegrasDeFrete, SEM_REGRAS, type RegrasDeFrete } from "@/core/shipping/regras-de-frete";
 import { type Result, ok, err } from "@/core/shared/result";
 import type {
   Comprador,
@@ -44,6 +45,8 @@ type Dependencias = {
   frete: ShippingProvider | null;
   /** Null quando o provedor não está configurado: não há como fechar compra. */
   pagamento: PaymentProvider | null;
+  /** Prazo de manuseio e frete grátis, configurados no painel. */
+  regrasDeFrete?: RegrasDeFrete;
   urls: {
     retorno(referencia: string, token: string): string;
     notificacao: string;
@@ -91,7 +94,12 @@ export function createCheckoutService(deps: Dependencias) {
 
   async function cotar(itens: CartItem[], cep: string): Promise<Result<OpcaoDeFrete[], string>> {
     if (!deps.frete) return err("Entrega indisponível no momento. Escolha a retirada em Brasília.");
-    return deps.frete.cotar({ cepDestino: cep, pacotes: pacotes(itens) });
+    const cotacao = await deps.frete.cotar({ cepDestino: cep, pacotes: pacotes(itens) });
+    if (!cotacao.ok) return cotacao;
+    // As regras entram aqui, e não na tela, para que o preço recotado no
+    // fechamento seja exatamente o que o cliente viu.
+    const subtotal = itens.reduce((s, i) => s + i.unitPriceCents * i.quantity, 0);
+    return ok(aplicarRegrasDeFrete(cotacao.value, deps.regrasDeFrete ?? SEM_REGRAS, subtotal));
   }
 
   const servico = {

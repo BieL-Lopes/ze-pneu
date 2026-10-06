@@ -157,6 +157,12 @@ export default async function PedidoPage({ params, searchParams }: Props) {
               {r.frete.transportadora} · {r.frete.servico}
               {r.frete.prazoDias > 0 && ` · até ${r.frete.prazoDias} dias úteis após o envio`}
             </p>
+            {pedido.rastreio && (
+              <p className="mt-3 text-tinta">
+                Código de rastreio:{" "}
+                <span className="numerais-tabulares font-bold select-all">{pedido.rastreio}</span>
+              </p>
+            )}
           </div>
         )}
       </section>
