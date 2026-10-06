@@ -58,7 +58,8 @@ export default async function ProdutoPage({ params }: Props) {
               <img
                 src={capa.url}
                 alt={capa.alt}
-                className="h-full w-full object-contain"
+                // Pela base, como no card: o corte da foto encosta na borda.
+                className="h-full w-full object-contain object-bottom"
               />
             ) : (
               <div className="flex h-full items-center justify-center text-tinta-media">

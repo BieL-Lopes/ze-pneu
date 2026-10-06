@@ -8,13 +8,18 @@ export function ProductCard({ produto }: { produto: ProductSummary }) {
       href={`/produto/${produto.slug}`}
       className="group flex flex-col rounded-controle border border-neutral-200 bg-white p-4 transition hover:border-marca"
     >
+      {/*
+        Alinhada pela base: as fotos dos fabricantes costumam cortar o pneu na
+        borda de baixo, e centralizada a linha do corte ficava flutuando no meio
+        do quadro. Encostada na base, o pneu parece apoiado no fim do card.
+      */}
       <div className="mb-4 aspect-square overflow-hidden rounded-controle bg-neutral-100">
         {produto.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={produto.imageUrl}
             alt={produto.altText ?? produto.name}
-            className="h-full w-full object-contain transition duration-300 group-hover:scale-105"
+            className="h-full w-full origin-bottom object-contain object-bottom transition duration-300 group-hover:scale-105"
             loading="lazy"
           />
         ) : (
