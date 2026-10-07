@@ -19,7 +19,7 @@ novo deploy para lê-las.
 Na tela de Webhooks:
 
 - **URL de produção:** `https://<domínio>/api/webhooks/mercado-pago`
-  (hoje `https://ze-pneu.vercel.app/api/webhooks/mercado-pago`)
+  (`https://zepneu.com.br/api/webhooks/mercado-pago`)
 - **Evento:** marque só **Pagamentos**.
 
 Sem a assinatura secreta o aviso é recusado (503): não há como saber se veio

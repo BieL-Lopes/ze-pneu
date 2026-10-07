@@ -1,6 +1,6 @@
 # Painel administrativo
 
-Endereço: `/admin` (ex.: `https://ze-pneu.vercel.app/admin`). Fora do Google
+Endereço: `/admin` (`https://zepneu.com.br/admin`). Fora do Google
 (`robots.txt` e `noindex`).
 
 ## Primeiro acesso
